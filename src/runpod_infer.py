@@ -1,0 +1,122 @@
+'''
+RunPod | ControlNet | Infer
+'''
+
+import os
+import base64
+import argparse
+from io import BytesIO
+from subprocess import call
+
+from PIL import Image
+import numpy as np
+
+import runpod
+from runpod.serverless.utils import rp_download, rp_upload
+from runpod.serverless.utils.rp_validator import validate
+
+
+# ---------------------------------------------------------------------------- #
+#                                    Schemas                                   #
+# ---------------------------------------------------------------------------- #
+BASE_SCHEMA = {
+    'image_url': {'type': str, 'required': False, 'default': None},
+    'image_base64': {'type': str, 'required': False, 'default': None},
+    'prompt': {'type': str, 'required': False, 'default': None},
+    'a_prompt': {'type': str, 'required': False, 'default': "best quality, extremely detailed"},
+    'n_prompt': {'type': str, 'required': False, 'default': "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"},
+    'num_samples': {'type': int, 'required': False, 'default': 1, 'constraints': lambda samples: samples in [1, 4]},
+    'image_resolution': {'type': int, 'required': False, 'default': 512, 'constraints': lambda resolution: resolution in [256, 512, 768]},
+    'ddim_steps': {'type': int, 'required': False, 'default': 20},
+    'scale': {'type': float, 'required': False, 'default': 9.0, 'constraints': lambda scale: 0.1 < scale < 30.0},
+    'seed': {'type': int, 'required': True},
+    'eta': {'type': float, 'required': False, 'default': 0.0},
+    'low_threshold': {'type': int, 'required': False, 'default': 100, 'constraints': lambda threshold: 1 < threshold < 255},
+    'high_threshold': {'type': int, 'required': False, 'default': 200, 'constraints': lambda threshold: 1 < threshold < 255},
+}
+
+def get_image(image_url, image_base64):
+    '''
+    Get the image from the provided URL or base64 string.
+    Returns a PIL image.
+    '''
+    if image_url is not None:
+        image = rp_download.file(image_url)
+        image = image['file_path']
+
+    if image_base64 is not None:
+        image_bytes = base64.b64decode(image_base64)
+        image = BytesIO(image_bytes)
+
+    input_image = Image.open(image)
+    input_image = np.array(input_image)
+
+    return input_image
+
+
+def predict(job):
+    '''
+    Run a single prediction on the model.
+    '''
+    job_input = job['input']
+
+
+    # # Check for provided image
+    # if job_input.get('image_url', None) is None and job_input.get('image_base64', None) is None:
+    #     return {'error': 'No image provided. Please provide an image_url or image_base64.'}
+    # elif job_input.get('image_url', None) is not None and job_input.get('image_base64', None) is not None:
+    #     return {'error': 'Both image_url and image_base64 provided. Please provide only one.'}
+    
+
+    return {'input_was':job_input}
+
+
+    # # --------------------------------- Openpose --------------------------------- #
+    # elif MODEL_TYPE == "openpose":
+    #     openpose_validate = validate(job_input, OPENPOSE_SCHEMA)
+    #     if 'errors' in openpose_validate:
+    #         return {'error': openpose_validate['errors']}
+    #     validated_input = openpose_validate['validated_input']
+
+    #     outputs = process_pose(
+    #         get_image(validated_input['image_url'], validated_input['image_base64']),
+    #         validated_input['prompt'],
+    #         validated_input['a_prompt'],
+    #         validated_input['n_prompt'],
+    #         validated_input['num_samples'],
+    #         validated_input['image_resolution'],
+    #         validated_input['detect_resolution'],
+    #         validated_input['ddim_steps'],
+    #         validated_input['scale'],
+    #         validated_input['seed'],
+    #         validated_input['eta'],
+    #         model,
+    #         ddim_sampler,
+    #     )
+
+    # # outputs from list to PIL
+    # outputs = [Image.fromarray(output) for output in outputs]
+
+    # # save outputs to file
+    # os.makedirs("tmp", exist_ok=True)
+    # outputs = [output.save(f"tmp/output_{i}.png") for i, output in enumerate(outputs)]
+
+    # for index, output in enumerate(outputs):
+    #     outputs = rp_upload.upload_image(job['id'], f"tmp/output_{index}.png")
+
+    # # return paths to output files
+    # return outputs
+
+
+# ---------------------------------------------------------------------------- #
+#                                     Main                                     #
+# ---------------------------------------------------------------------------- #
+# parser = argparse.ArgumentParser(description=__doc__)
+# parser.add_argument("--model_type", type=str,
+#                     default=None, help="Model URL")
+
+
+if __name__ == "__main__":
+    # args = parser.parse_args()
+
+    runpod.serverless.start({"handler": predict})
