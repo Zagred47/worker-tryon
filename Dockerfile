@@ -22,7 +22,7 @@ RUN apt-get update --yes && \
 RUN apt-get update && apt-get install -y --no-install-recommends
 RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get install git.8 -y
+RUN apt-get install git -y
 RUN apt-get install python3.8 -y
 RUN apt-get install python3-pip -y
 RUN apt-get install python3.8-distutils -y
