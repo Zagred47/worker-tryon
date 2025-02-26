@@ -65,11 +65,19 @@ RUN python3.8 -m pip install yapf==0.32.0
 RUN python3.8 -m pip install prettytable==3.6.0
 RUN python3.8 -m pip install runpod==0.9.3
 
-ADD src .
+
+RUN git clone https://github.com/franciszzj/Leffa.git
+WORKDIR Leffa
+
+RUN python3.8 -m pip install -r requirements.txt 
 
 # Download weights
-# COPY builder/download_weights.py .
-# RUN python3.8 download_weights.py --model_type="${MODEL_TYPE}"
-# RUN rm download_weights.py
+COPY builder/download_weights.py .
+RUN python3.8 download_weights.py
+RUN rm download_weights.py
+
+COPY src/runpod_infer.py .
+COPY src/prediction.py .
+
 
 CMD python3.8 -u runpod_infer.py

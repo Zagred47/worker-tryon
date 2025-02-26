@@ -1,17 +1,30 @@
-from utils import model_dl_urls, annotator_dl_urls, download_model
-import argparse
+import numpy as np
+from PIL import Image
+from huggingface_hub import snapshot_download
+from leffa.transform import LeffaTransform
+from leffa.model import LeffaModel
+from leffa.inference import LeffaInference
+from leffa_utils.garment_agnostic_mask_predictor import AutoMasker
+from leffa_utils.densepose_predictor import DensePosePredictor
+from leffa_utils.utils import resize_and_center, get_agnostic_mask_hd, get_agnostic_mask_dc, preprocess_garment_image
+from preprocess.humanparsing.run_parsing import Parsing
+from preprocess.openpose.run_openpose import OpenPose
 
-# add command line arg for model type
-parser = argparse.ArgumentParser()
-parser.add_argument("--model_type", type=str, default="canny", help="Model type to download")
-# add a binary flag to wipe the weights folder
-parser.add_argument("--wipe", action="store_true", help="Wipe the weights folder")
-args = parser.parse_args()
+# Scarica i checkpoint (se non già scaricati)
+snapshot_download(repo_id="franciszzj/Leffa", local_dir="./ckpts")
 
-MODEL_TYPE = args.model_type
+# Inizializzazione dei modelli
+mask_predictor = AutoMasker(densepose_path="./ckpts/densepose", schp_path="./ckpts/schp")
+densepose_predictor = DensePosePredictor(config_path="./ckpts/densepose/densepose_rcnn_R_50_FPN_s1x.yaml", 
+                                         weights_path="./ckpts/densepose/model_final_162be9.pkl")
+parsing = Parsing(atr_path="./ckpts/humanparsing/parsing_atr.onnx", 
+                  lip_path="./ckpts/humanparsing/parsing_lip.onnx")
+openpose = OpenPose(body_model_path="./ckpts/openpose/body_pose_model.pth")
 
+vt_model_hd = LeffaModel(pretrained_model_name_or_path="./ckpts/stable-diffusion-inpainting", 
+                          pretrained_model="./ckpts/virtual_tryon.pth", dtype="float16")
+vt_inference_hd = LeffaInference(model=vt_model_hd)
 
-for model_name in annotator_dl_urls.keys():
-    download_model(model_name, annotator_dl_urls)
-
-download_model(MODEL_TYPE, model_dl_urls)
+vt_model_dc = LeffaModel(pretrained_model_name_or_path="./ckpts/stable-diffusion-inpainting", 
+                          pretrained_model="./ckpts/virtual_tryon_dc.pth", dtype="float16")
+vt_inference_dc = LeffaInference(model=vt_model_dc)

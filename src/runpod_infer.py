@@ -16,23 +16,27 @@ from runpod.serverless.utils import rp_download, rp_upload
 from runpod.serverless.utils.rp_validator import validate
 
 
+from prediction import predict
+import tempfile
 # ---------------------------------------------------------------------------- #
 #                                    Schemas                                   #
 # ---------------------------------------------------------------------------- #
 BASE_SCHEMA = {
-    'image_url': {'type': str, 'required': False, 'default': None},
-    'image_base64': {'type': str, 'required': False, 'default': None},
-    'prompt': {'type': str, 'required': False, 'default': None},
-    'a_prompt': {'type': str, 'required': False, 'default': "best quality, extremely detailed"},
-    'n_prompt': {'type': str, 'required': False, 'default': "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"},
-    'num_samples': {'type': int, 'required': False, 'default': 1, 'constraints': lambda samples: samples in [1, 4]},
-    'image_resolution': {'type': int, 'required': False, 'default': 512, 'constraints': lambda resolution: resolution in [256, 512, 768]},
-    'ddim_steps': {'type': int, 'required': False, 'default': 20},
-    'scale': {'type': float, 'required': False, 'default': 9.0, 'constraints': lambda scale: 0.1 < scale < 30.0},
-    'seed': {'type': int, 'required': True},
-    'eta': {'type': float, 'required': False, 'default': 0.0},
-    'low_threshold': {'type': int, 'required': False, 'default': 100, 'constraints': lambda threshold: 1 < threshold < 255},
-    'high_threshold': {'type': int, 'required': False, 'default': 200, 'constraints': lambda threshold: 1 < threshold < 255},
+    'src_url': {'type': str, 'required': False, 'default': None},
+    'src_base64': {'type': str, 'required': False, 'default': None},
+    'ref_url': {'type': str, 'required': False, 'default': None},
+    'ref_base64': {'type': str, 'required': False, 'default': None},
+    # 'prompt': {'type': str, 'required': False, 'default': None},
+    # 'a_prompt': {'type': str, 'required': False, 'default': "best quality, extremely detailed"},
+    # 'n_prompt': {'type': str, 'required': False, 'default': "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"},
+    # 'num_samples': {'type': int, 'required': False, 'default': 1, 'constraints': lambda samples: samples in [1, 4]},
+    # 'image_resolution': {'type': int, 'required': False, 'default': 512, 'constraints': lambda resolution: resolution in [256, 512, 768]},
+    # 'ddim_steps': {'type': int, 'required': False, 'default': 20},
+    # 'scale': {'type': float, 'required': False, 'default': 9.0, 'constraints': lambda scale: 0.1 < scale < 30.0},
+    # 'seed': {'type': int, 'required': True},
+    # 'eta': {'type': float, 'required': False, 'default': 0.0},
+    # 'low_threshold': {'type': int, 'required': False, 'default': 100, 'constraints': lambda threshold: 1 < threshold < 255},
+    # 'high_threshold': {'type': int, 'required': False, 'default': 200, 'constraints': lambda threshold: 1 < threshold < 255},
 }
 
 def get_image(image_url, image_base64):
@@ -60,15 +64,25 @@ def predict(job):
     '''
     job_input = job['input']
 
-
-    # # Check for provided image
-    # if job_input.get('image_url', None) is None and job_input.get('image_base64', None) is None:
-    #     return {'error': 'No image provided. Please provide an image_url or image_base64.'}
-    # elif job_input.get('image_url', None) is not None and job_input.get('image_base64', None) is not None:
-    #     return {'error': 'Both image_url and image_base64 provided. Please provide only one.'}
-    
-
-    return {'input_was':job_input}
+    tmp_folder = tempfile.mkdtemp()
+    inputs = {}
+    for img in ['src', 'ref']:
+        if job_input.get(F'{img}_url', None) is None and job_input.get(f'{img}_base64', None) is None:
+            return {'error': f'No {img} image provided. Please provide an {img}_url or {img}_base64.'}
+        elif job_input.get(f'{img}_url', None) is not None and job_input.get(f'{img}_base64', None) is not None:
+            return {'error': f'Both {img}_url and {img}_base64 provided. Please provide only one.'}
+        
+        # save image in temp folder
+        img_data = get_image(job_input.get(f'{img}_url', None), job_input.get(f'{img}_base64', None))
+        img_path = os.path.join(tmp_folder, f'{img}.png')
+        Image.fromarray(img_data).save(img_path)
+        inputs[img] = img_path
+        
+    result = predict(inputs['src'], inputs['ref'])
+    output_image = Image.fromarray(result[0].astype(np.uint8))
+    output_image.save(os.path.join(tmp_folder, 'output.png'))
+    output = rp_upload.upload_image(job['id'], os.path.join(tmp_folder, 'output.png'))
+    return output
 
 
     # # --------------------------------- Openpose --------------------------------- #
