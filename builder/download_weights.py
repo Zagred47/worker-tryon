@@ -14,17 +14,17 @@ from preprocess.openpose.run_openpose import OpenPose
 snapshot_download(repo_id="franciszzj/Leffa", local_dir="./ckpts")
 
 # Inizializzazione dei modelli
-mask_predictor = AutoMasker(densepose_path="./ckpts/densepose", schp_path="./ckpts/schp")
-densepose_predictor = DensePosePredictor(config_path="./ckpts/densepose/densepose_rcnn_R_50_FPN_s1x.yaml", 
-                                         weights_path="./ckpts/densepose/model_final_162be9.pkl")
-parsing = Parsing(atr_path="./ckpts/humanparsing/parsing_atr.onnx", 
-                  lip_path="./ckpts/humanparsing/parsing_lip.onnx")
-openpose = OpenPose(body_model_path="./ckpts/openpose/body_pose_model.pth")
+#mask_predictor = AutoMasker(densepose_path="./ckpts/densepose", schp_path="./ckpts/schp")
+#densepose_predictor = DensePosePredictor(config_path="./ckpts/densepose/densepose_rcnn_R_50_FPN_s1x.yaml", 
+#                                         weights_path="./ckpts/densepose/model_final_162be9.pkl")
+#parsing = Parsing(atr_path="./ckpts/humanparsing/parsing_atr.onnx", 
+#                  lip_path="./ckpts/humanparsing/parsing_lip.onnx")
+#openpose = OpenPose(body_model_path="./ckpts/openpose/body_pose_model.pth")
 
-vt_model_hd = LeffaModel(pretrained_model_name_or_path="./ckpts/stable-diffusion-inpainting", 
-                          pretrained_model="./ckpts/virtual_tryon.pth", dtype="float16")
-vt_inference_hd = LeffaInference(model=vt_model_hd)
+#vt_model_hd = LeffaModel(pretrained_model_name_or_path="./ckpts/stable-diffusion-inpainting", 
+#                          pretrained_model="./ckpts/virtual_tryon.pth", dtype="float16")
+#vt_inference_hd = LeffaInference(model=vt_model_hd)
 
-vt_model_dc = LeffaModel(pretrained_model_name_or_path="./ckpts/stable-diffusion-inpainting", 
-                          pretrained_model="./ckpts/virtual_tryon_dc.pth", dtype="float16")
-vt_inference_dc = LeffaInference(model=vt_model_dc)
+#vt_model_dc = LeffaModel(pretrained_model_name_or_path="./ckpts/stable-diffusion-inpainting", 
+#                          pretrained_model="./ckpts/virtual_tryon_dc.pth", dtype="float16")
+#vt_inference_dc = LeffaInference(model=vt_model_dc)
