@@ -16,7 +16,7 @@ from runpod.serverless.utils import rp_download, rp_upload
 from runpod.serverless.utils.rp_validator import validate
 
 
-from prediction import predict
+from prediction import leffa_predict
 import tempfile
 # ---------------------------------------------------------------------------- #
 #                                    Schemas                                   #
@@ -78,7 +78,7 @@ def predict(job):
         Image.fromarray(img_data).save(img_path)
         inputs[img] = img_path
         
-    result = predict(inputs['src'], inputs['ref'])
+    result = leffa_predict(inputs['src'], inputs['ref'])
     output_image = Image.fromarray(result[0].astype(np.uint8))
     output_image.save(os.path.join(tmp_folder, 'output.png'))
     output = rp_upload.upload_image(job['id'], os.path.join(tmp_folder, 'output.png'))
