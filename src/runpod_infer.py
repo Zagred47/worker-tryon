@@ -57,7 +57,14 @@ def get_image(image_url, image_base64):
 
     return input_image
 
-
+def encode_img_b64(image):
+    '''
+    Encodes an image to base64.
+    '''
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue())
+    return img_str.decode('utf-8')
 def predict(job):
     '''
     Run a single prediction on the model.
@@ -80,9 +87,9 @@ def predict(job):
         
     result = leffa_predict(inputs['src'], inputs['ref'])
     output_image = Image.fromarray(result[0].astype(np.uint8))
-    output_image.save(os.path.join(tmp_folder, 'output.png'))
-    output = rp_upload.upload_image(job['id'], os.path.join(tmp_folder, 'output.png'))
-    return output
+    return {
+        'output': encode_img_b64(output_image)
+    }
 
 
     # # --------------------------------- Openpose --------------------------------- #
