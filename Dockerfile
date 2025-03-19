@@ -67,10 +67,18 @@ RUN python3.8 -m pip install prettytable==3.6.0
 RUN python3.8 -m pip install runpod==0.9.3
 
 
-RUN git clone https://github.com/franciszzj/Leffa.git
-WORKDIR Leffa
+RUN git clone https://github.com/Zheng-Chong/CatVTON.git
+WORKDIR CatVTON
+RUN python3.8 -m pip install pip install diffusers==0.32.2
+RUN python3.8 -m pip install fvcore==0.1.5.post20221221
+RUN python3.8 -m pip install av==14.2.0
+RUN python3.8 -m pip install opencv-python==4.11.0.86
+RUN python3.8 -m pip install omegaconf==2.3.0
+RUN python3.8 -m pip install pycocotools==2.0.8
+RUN python3.8 -m pip install scipy==1.15.2
+RUN python3.8 -m pip install accelerate==1.5.2
+RUN python3.8 -m pip install transformers==4.49.0
 
-RUN python3.8 -m pip install -r requirements.txt 
 
 # Download weights
 COPY builder/download_weights.py .
