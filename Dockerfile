@@ -69,7 +69,7 @@ RUN python3.8 -m pip install runpod==0.9.3
 
 RUN git clone https://github.com/Zheng-Chong/CatVTON.git
 WORKDIR CatVTON
-RUN python3.8 -m pip install pip install diffusers==0.32.2
+RUN python3.8 -m pip install diffusers==0.32.2
 RUN python3.8 -m pip install fvcore==0.1.5.post20221221
 RUN python3.8 -m pip install av==14.2.0
 RUN python3.8 -m pip install opencv-python==4.11.0.86
