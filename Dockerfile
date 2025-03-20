@@ -23,13 +23,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends
 RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get install git -y
-RUN apt-get install python3.8 -y
+RUN apt-get install python3.10 -y
 RUN apt-get install python3-pip -y
-RUN apt-get install python3.8-distutils -y
+RUN apt-get install python3.10-distutils -y
 
-RUN apt-get install python3.8-dev -y
-RUN apt-get install python3.8-venv -y
-RUN python3.8 -m venv /venv
+RUN apt-get install python3.10-dev -y
+RUN apt-get install python3.10-venv -y
+RUN python3.10 -m venv /venv
 ENV PATH=/venv/bin:$PATH
 
 # Install system dependencies
@@ -82,11 +82,11 @@ RUN python3.10 -m pip install transformers==4.49.0
 
 # Download weights
 COPY builder/download_weights.py .
-RUN python3.8 download_weights.py
+RUN python3.10 download_weights.py
 RUN rm download_weights.py
 
 COPY src/runpod_infer.py .
 COPY src/prediction.py .
 
 
-CMD python3.8 -u runpod_infer.py
+CMD python3.10 -u runpod_infer.py
