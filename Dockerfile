@@ -74,7 +74,7 @@ RUN python3.8 -m pip install fvcore==0.1.5.post20221221
 RUN python3.8 -m pip install av==12.3.0
 RUN python3.8 -m pip install opencv-python==4.11.0.86
 RUN python3.8 -m pip install omegaconf==2.3.0
-RUN python3.8 -m pip install pycocotools==2.0.8
+RUN python3.8 -m pip install pycocotools==2.0.7
 RUN python3.8 -m pip install scipy==1.15.2
 RUN python3.8 -m pip install accelerate==1.5.2
 RUN python3.8 -m pip install transformers==4.49.0
