@@ -76,7 +76,7 @@ RUN python3.8 -m pip install opencv-python==4.11.0.86
 RUN python3.8 -m pip install omegaconf==2.3.0
 RUN python3.8 -m pip install pycocotools==2.0.7
 RUN python3.8 -m pip install scipy==1.10.0
-RUN python3.8 -m pip install accelerate==1.5.2
+RUN python3.8 -m pip install accelerate==1.0.0
 RUN python3.8 -m pip install transformers==4.49.0
 
 
