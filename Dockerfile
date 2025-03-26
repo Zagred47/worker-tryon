@@ -51,8 +51,8 @@ RUN python3.10 -m pip install pycocotools==2.0.8
 RUN python3.10 -m pip install scipy==1.15.2
 RUN python3.10 -m pip install accelerate==1.5.2
 RUN python3.10 -m pip install transformers==4.49.0
-
-
+RUN python3.10 -m pip install cloudpickle==3.1.1
+RUN python3.10 -m pip install omegaconf==2.3.0
 # Download weights
 COPY builder/download_weights.py .
 RUN python3.10 download_weights.py
