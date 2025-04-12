@@ -16,7 +16,7 @@ from runpod.serverless.utils import rp_download, rp_upload
 from runpod.serverless.utils.rp_validator import validate
 
 
-from prediction import vton_predict
+from prediction import leffa_predict
 import tempfile
 # ---------------------------------------------------------------------------- #
 #                                    Schemas                                   #
@@ -85,8 +85,8 @@ def predict(job):
         Image.fromarray(img_data).save(img_path)
         inputs[img] = img_path
         
-    output_image = vton_predict(inputs['src'], inputs['ref'])
-    output_image = Image.fromarray(output_image.astype(np.uint8))
+    result = leffa_predict(inputs['src'], inputs['ref'])
+    output_image = Image.fromarray(result[0].astype(np.uint8))
     return {
         'output': encode_img_b64(output_image)
     }
