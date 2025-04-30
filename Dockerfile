@@ -23,62 +23,43 @@ RUN apt-get update && apt-get install -y --no-install-recommends
 RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get install git -y
-RUN apt-get install python3.8 -y
+RUN apt-get install python3.10 -y
 RUN apt-get install python3-pip -y
-RUN apt-get install python3.8-distutils -y
+RUN apt-get install python3.10-distutils -y
 
-RUN apt-get install python3.8-dev -y
-RUN apt-get install python3.8-venv -y
-RUN python3.8 -m venv /venv
+RUN apt-get install python3.10-dev -y
+RUN apt-get install python3.10-venv -y
+RUN python3.10 -m venv /venv
 ENV PATH=/venv/bin:$PATH
 
 # Install system dependencies
 RUN apt-get install python3-opencv -y
 
 # Install Python dependencies
-RUN python3.8 -m pip install --upgrade pip==20.3
-RUN python3.8 -m pip install wheel
-RUN python3.8 -m pip install setuptools
-RUN python3.8 -m pip install basicsr==1.4.2
-RUN python3.8 -m pip install torch==1.13.0
-RUN python3.8 -m pip install torchvision==0.14.0
-RUN python3.8 -m pip install numpy==1.21.6
-RUN python3.8 -m pip install gradio==3.18.0
-RUN python3.8 -m pip install albumentations==1.2.1
-RUN python3.8 -m pip install opencv-contrib-python==4.6.0.66
-RUN python3.8 -m pip install imageio==2.9.0
-RUN python3.8 -m pip install imageio-ffmpeg==0.4.8
-RUN python3.8 -m pip install pytorch-lightning==1.9.1
-RUN python3.8 -m pip install omegaconf==2.3.0
-RUN python3.8 -m pip install test-tube==0.7.5
-RUN python3.8 -m pip install streamlit==1.18.1
-RUN python3.8 -m pip install einops==0.6.0
-RUN python3.8 -m pip install transformers==4.26.1
-RUN python3.8 -m pip install webdataset==0.2.33
-RUN python3.8 -m pip install kornia==0.6.9
-RUN python3.8 -m pip install open_clip_torch==2.11.1
-RUN python3.8 -m pip install invisible-watermark==0.1.5
-RUN python3.8 -m pip install streamlit-drawable-canvas==0.9.2
-RUN python3.8 -m pip install torchmetrics==0.11.1
-RUN python3.8 -m pip install timm==0.6.12
-RUN python3.8 -m pip install addict==2.4.0
-RUN python3.8 -m pip install yapf==0.32.0
-RUN python3.8 -m pip install prettytable==3.6.0
-RUN python3.8 -m pip install runpod==0.9.3
+RUN python3.10 -m pip install torch torchvision torchaudio
+RUN python3.10 -m pip install runpod
 
 
-RUN git clone https://github.com/franciszzj/Leffa.git
-WORKDIR Leffa
-
-RUN python3.8 -m pip install -r requirements.txt 
-
+RUN git clone https://github.com/Zheng-Chong/CatVTON.git
+WORKDIR CatVTON
+RUN python3.10 -m pip install diffusers==0.32.2
+RUN python3.10 -m pip install fvcore==0.1.5.post20221221
+RUN python3.10 -m pip install av==14.2.0
+RUN python3.10 -m pip install opencv-python==4.11.0.86
+RUN python3.10 -m pip install omegaconf==2.3.0
+RUN python3.10 -m pip install pycocotools==2.0.8
+RUN python3.10 -m pip install scipy==1.15.2
+RUN python3.10 -m pip install accelerate==1.5.2
+RUN python3.10 -m pip install transformers==4.49.0
+RUN python3.10 -m pip install cloudpickle==3.1.1
+RUN python3.10 -m pip install omegaconf==2.3.0
 # Download weights
 COPY builder/download_weights.py .
-RUN python3.8 download_weights.py
+RUN python3.10 download_weights.py
 RUN rm download_weights.py
 
 COPY src/runpod_infer.py .
 COPY src/prediction.py .
 
 
-CMD python3.8 -u runpod_infer.py
+CMD python3.10 -u runpod_infer.py
