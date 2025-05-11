@@ -140,4 +140,4 @@ def predict(job):
 if __name__ == "__main__":
     # args = parser.parse_args()
 
-    runpod.serverless.start({"handler": predict, 'concurrency_modifier':2})
+    runpod.serverless.start({"handler": predict, 'concurrency_modifier':(lambda x: 2)})
