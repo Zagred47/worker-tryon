@@ -92,8 +92,7 @@ def parse_args():
 
 
 
-def vton_predict(src_image_path, ref_image_path, step=50, scale=2.5, seed=42, vt_model_type="viton_hd", 
-                  vt_garment_type="upper_body", vt_repaint=False, preprocess_garment=False):
+def vton_predict(src_image_path, ref_image_path, cloth_type, step=50, scale=2.5, seed=42):
     
     args = parse_args()
    
@@ -211,7 +210,7 @@ def vton_predict(src_image_path, ref_image_path, step=50, scale=2.5, seed=42, vt
             new_result_image.paste(result_image, (condition_width + 5, 0))
         return new_result_image
 
-    cloth_type = 'overall' #["upper", "lower", "overall"]
+    #cloth_type = 'overall' #["upper", "lower", "overall"]
     num_inference_steps = 100 # min=10 max=100 step=5
     guidance_scale = 3.5 # minimum=0.0, maximum=7.5, step=0.5, value=2.5
     seed = 42 # minimum=-1, maximum=10000, step=1, value=42

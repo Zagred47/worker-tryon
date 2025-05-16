@@ -84,8 +84,9 @@ def predict(job):
         img_path = os.path.join(tmp_folder, f'{img}.png')
         Image.fromarray(img_data).save(img_path)
         inputs[img] = img_path
-        
-    output_image = vton_predict(inputs['src'], inputs['ref'])
+    cloth_type = inputs.get('cloth_type', 'overall')
+    assert cloth_type in ["upper", "lower", "overall"]
+    output_image = vton_predict(inputs['src'], inputs['ref'], cloth_type)
     output_image = Image.fromarray(output_image.astype(np.uint8))
     return {
         'output': encode_img_b64(output_image)
